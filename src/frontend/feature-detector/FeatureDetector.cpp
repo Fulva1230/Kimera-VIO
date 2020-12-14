@@ -5,6 +5,7 @@
  */
 
 #include "kimera-vio/frontend/feature-detector/FeatureDetector.h"
+#include <opencv2/cudafeatures2d.hpp>
 
 #include <algorithm>
 
@@ -50,7 +51,7 @@ FeatureDetector::FeatureDetector(
 #endif
       static constexpr int patch_size = 0;  // We don't use descriptors (yet).
       feature_detector_ =
-          cv::ORB::create(feature_detector_params_.max_features_per_frame_,
+          cv::cuda::ORB::create(feature_detector_params_.max_features_per_frame_,
                           scale_factor,
                           n_levels,
                           edge_threshold,
