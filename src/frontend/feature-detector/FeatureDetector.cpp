@@ -32,7 +32,7 @@ FeatureDetector::FeatureDetector(
   switch (feature_detector_params.feature_detector_type_) {
     case FeatureDetectorType::FAST: {
       // Fast threshold, usually in range [10, 35]
-      feature_detector_ = cv::FastFeatureDetector::create(
+      feature_detector_ = cv::cuda::FastFeatureDetector::create(
           feature_detector_params.fast_thresh_, true);
       break;
     }
@@ -49,7 +49,7 @@ FeatureDetector::FeatureDetector(
       static constexpr cv::ORB::ScoreType score_type =
           cv::ORB::ScoreType::HARRIS_SCORE;
 #endif
-      static constexpr int patch_size = 0;  // We don't use descriptors (yet).
+      static constexpr int patch_size = 2;  // We don't use descriptors (yet).
       feature_detector_ =
           cv::cuda::ORB::create(feature_detector_params_.max_features_per_frame_,
                           scale_factor,
