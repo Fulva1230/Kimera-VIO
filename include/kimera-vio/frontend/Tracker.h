@@ -17,6 +17,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/cudaoptflow.hpp>
 
 #include <gtsam/base/Matrix.h>
 #include <gtsam/geometry/Pose3.h>

@@ -73,7 +73,7 @@ else()
 endif()
 
 ### Compile the code
-add_library(${PROJECT_NAME} SHARED "")
+add_library(${PROJECT_NAME} SHARED "" src/frontend/feature-detector/CudaFastFeatureDetectorWrapper.cpp include/kimera-vio/frontend/feature-detector/CudaFastFeatureDetectorWrapper.h include/cuda-enable/HybridMat.h src/cuda-enable/HybridMat.cpp)
 
 ### Add source code for data provider.
 add_subdirectory(include/kimera-vio/dataprovider)
