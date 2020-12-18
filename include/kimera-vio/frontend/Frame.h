@@ -30,8 +30,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
-#include <cuda-enable/HybridMat.h>
-
 #include <gtsam/base/Matrix.h>
 #include <gtsam/geometry/PinholeCamera.h>
 #include <gtsam/geometry/Point3.h>
@@ -190,6 +188,14 @@ namespace VIO {
             return versor.normalized();
         }
 
+        cv::cuda::GpuMat &get_gpuMat() {
+            if (!has_gpu_cache) {
+                gpuMat.upload(img_);
+                has_gpu_cache = true;
+            }
+            return gpuMat;
+        }
+
     public:
         const FrameId id_;
 
@@ -200,7 +206,7 @@ namespace VIO {
         // Actual image stored by the class frame.
         // This must be const otw, we have to reimplement the copy ctor to allow
         // for deep copies.
-        const cuda_enable::HybridMat img_;
+        const cv::Mat img_;
 
         // Results of image processing.
         bool isKeyframe_ = false;
@@ -215,6 +221,9 @@ namespace VIO {
         BearingVectors versors_;
         //! Not currently used
         cv::Mat descriptors_;
+
+        bool has_gpu_cache{false};
+        cv::cuda::GpuMat gpuMat;
     };
 
 }  // namespace VIO

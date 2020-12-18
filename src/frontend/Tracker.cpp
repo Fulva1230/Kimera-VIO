@@ -114,15 +114,13 @@ namespace VIO {
         cv::Ptr<cv::cuda::SparsePyrLKOpticalFlow> opticalFlowCalculator = cv::cuda::SparsePyrLKOpticalFlow::create(
                 klt_window_size, tracker_params_.klt_max_level_, 30, true);
 
-        cv::cuda::GpuMat ref_gpu_img(ref_frame->img_);
-        cv::cuda::GpuMat cur_gpu_img(cur_frame->img_);
         cv::cuda::GpuMat px_ref_gpu(px_ref);
         cv::cuda::GpuMat px_cur_gpu(px_cur);
         cv::cuda::GpuMat state_gpu(status);
         cv::cuda::GpuMat error_gpu(error);
 
-        opticalFlowCalculator->calc(ref_gpu_img,
-                                    cur_gpu_img,
+        opticalFlowCalculator->calc(ref_frame->get_gpuMat(),
+                                    cur_frame->get_gpuMat(),
                                     px_ref_gpu,
                                     px_cur_gpu,
                                     state_gpu,

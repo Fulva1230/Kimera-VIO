@@ -12,8 +12,7 @@ namespace cuda_enable {
     class HybridMat : public cv::Mat {
     public:
         template<class ...T>
-        HybridMat(T &&... args):cv::Mat(std::forward<T>(args)...) {
-            gpu_mat = cv::cuda::GpuMat(*this);
+        explicit HybridMat(T &&... args):cv::Mat(std::forward<T>(args)...), gpu_mat(std::forward<T>(args)...) {
         }
 
         const cv::cuda::GpuMat &getGpuMat() const;
