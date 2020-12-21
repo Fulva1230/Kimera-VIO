@@ -175,6 +175,9 @@ class Tracker {
 
   // Stereo RANSAC
   opengv::sac::Ransac<ProblemStereo> stereo_ransac_;
+
+  // CUDA related
+  cv::Ptr<cv::cuda::SparsePyrLKOpticalFlow> opticalFlowCalculator;
 };
 
 }  // namespace VIO

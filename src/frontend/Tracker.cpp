@@ -64,6 +64,13 @@ namespace VIO {
         stereo_ransac_.threshold_ = tracker_params_.ransac_threshold_stereo_;
         stereo_ransac_.max_iterations_ = tracker_params_.ransac_max_iterations_;
         stereo_ransac_.probability_ = tracker_params_.ransac_probability_;
+
+        // Setup CUDA Optical Flow Calculator
+        const cv::Size2i klt_window_size(tracker_params.klt_win_size_,
+                                         tracker_params.klt_win_size_);
+
+        opticalFlowCalculator = cv::cuda::SparsePyrLKOpticalFlow::create(
+                klt_window_size, tracker_params.klt_max_level_, 30, true);
     }
 
 // TODO(Toni) a pity that this function is not const just because
@@ -94,8 +101,7 @@ namespace VIO {
                 cv::TermCriteria::COUNT + cv::TermCriteria::EPS,
                 tracker_params_.klt_max_iter_,
                 tracker_params_.klt_eps_);
-        const cv::Size2i klt_window_size(tracker_params_.klt_win_size_,
-                                         tracker_params_.klt_win_size_);
+
 
         // Initialize to old locations
         LOG_IF(ERROR, px_ref.size() == 0u) << "No keypoints in reference frame!";
@@ -111,9 +117,6 @@ namespace VIO {
         std::vector<float> error;
         auto time_lukas_kanade_tic = utils::Timer::tic();
         // CUDA OpticalFlow tracker
-        cv::Ptr<cv::cuda::SparsePyrLKOpticalFlow> opticalFlowCalculator = cv::cuda::SparsePyrLKOpticalFlow::create(
-                klt_window_size, tracker_params_.klt_max_level_, 30, true);
-
         cv::cuda::GpuMat px_ref_gpu(px_ref);
         cv::cuda::GpuMat px_cur_gpu(px_cur);
         cv::cuda::GpuMat state_gpu(status);
