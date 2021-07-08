@@ -66,6 +66,13 @@ Tracker::Tracker(const FrontendParams& tracker_params,
   stereo_ransac_.threshold_ = tracker_params_.ransac_threshold_stereo_;
   stereo_ransac_.max_iterations_ = tracker_params_.ransac_max_iterations_;
   stereo_ransac_.probability_ = tracker_params_.ransac_probability_;
+
+  // Setup CUDA Optical Flow Calculator
+  const cv::Size2i klt_window_size(tracker_params.klt_win_size_,
+                                   tracker_params.klt_win_size_);
+
+  opticalFlowCalculator = cv::cuda::SparsePyrLKOpticalFlow::create(
+      klt_window_size, tracker_params.klt_max_level_, 30, true);
 }
 
 // TODO(Toni) a pity that this function is not const just because
@@ -115,16 +122,23 @@ void Tracker::featureTracking(Frame* ref_frame,
   std::vector<uchar> status;
   std::vector<float> error;
   auto time_lukas_kanade_tic = utils::Timer::tic();
-  cv::calcOpticalFlowPyrLK(ref_frame->img_,
-                           cur_frame->img_,
-                           px_ref,
-                           px_cur,
-                           status,
-                           error,
-                           klt_window_size,
-                           tracker_params_.klt_max_level_,
-                           kTerminationCriteria,
-                           cv::OPTFLOW_USE_INITIAL_FLOW);
+  // CUDA OpticalFlow tracker
+  cv::cuda::GpuMat px_ref_gpu(px_ref);
+  cv::cuda::GpuMat px_cur_gpu(px_cur);
+  cv::cuda::GpuMat state_gpu(status);
+  cv::cuda::GpuMat error_gpu(error);
+
+  opticalFlowCalculator->calc(ref_frame->get_gpuMat(),
+                              cur_frame->get_gpuMat(),
+                              px_ref_gpu,
+                              px_cur_gpu,
+                              state_gpu,
+                              error_gpu);
+
+  px_cur_gpu.download(px_cur);
+  state_gpu.download(status);
+  error_gpu.download(error);
+
   VLOG(1) << "Optical Flow Timing [ms]: "
           << utils::Timer::toc(time_lukas_kanade_tic).count();
   VLOG(2) << "Finished Optical Flow Pyr LK tracking.";

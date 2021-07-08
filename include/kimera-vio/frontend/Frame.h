@@ -152,6 +152,14 @@ class Frame : public PipelinePayload {
     cam_param_.print();
   }
 
+  cv::cuda::GpuMat &get_gpuMat() {
+    if (!has_gpu_cache) {
+      gpuMat.upload(img_);
+      has_gpu_cache = true;
+    }
+    return gpuMat;
+  }
+
  public:
   const FrameId id_;
 
@@ -178,6 +186,9 @@ class Frame : public PipelinePayload {
   BearingVectors versors_;
   //! Not currently used
   cv::Mat descriptors_;
+
+  bool has_gpu_cache{false};
+  cv::cuda::GpuMat gpuMat;
 };
 
 }  // namespace VIO

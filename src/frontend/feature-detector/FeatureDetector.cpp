@@ -11,6 +11,7 @@
 #include "kimera-vio/frontend/UndistorterRectifier.h"
 #include "kimera-vio/utils/Timer.h"
 #include "kimera-vio/utils/UtilsOpenCV.h"  // Just for ExtractCorners...
+#include "kimera-vio/frontend/feature-detector/CudaFastFeatureDetectorWrapper.h"
 
 #include <numeric>
 
@@ -32,8 +33,10 @@ FeatureDetector::FeatureDetector(
   switch (feature_detector_params.feature_detector_type_) {
     case FeatureDetectorType::FAST: {
       // Fast threshold, usually in range [10, 35]
-      feature_detector_ = cv::FastFeatureDetector::create(
-          feature_detector_params.fast_thresh_, true);
+      // modify to use cuda version fast feature defector
+      feature_detector_ = cv::Ptr<cv::Feature2D>(
+          new CudaFastFeatureDetectorWrapper(feature_detector_params.fast_thresh_, true)
+      );
       break;
     }
     case FeatureDetectorType::ORB: {

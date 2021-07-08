@@ -4,6 +4,7 @@ target_sources(kimera_vio
   "${CMAKE_CURRENT_LIST_DIR}/FeatureDetectorParams.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/FeatureDetector.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/NonMaximumSuppression.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/CudaFastFeatureDetectorWrapper.cpp"
 )
 
 add_subdirectory(anms)

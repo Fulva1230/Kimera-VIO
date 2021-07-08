@@ -22,6 +22,7 @@
 #include <gtsam/geometry/StereoCamera.h>
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/cudaoptflow.hpp>
 
 #include "kimera-vio/frontend/Camera.h"
 #include "kimera-vio/frontend/StereoCamera.h"
@@ -175,6 +176,9 @@ class Tracker {
 
   // Stereo RANSAC
   opengv::sac::Ransac<ProblemStereo> stereo_ransac_;
+
+  // CUDA related
+  cv::Ptr<cv::cuda::SparsePyrLKOpticalFlow> opticalFlowCalculator;
 };
 
 }  // namespace VIO
