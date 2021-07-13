@@ -14,7 +14,7 @@ public:
     void detect(cv::InputArray image, std::vector<cv::KeyPoint> &keypoints, cv::InputArray mask = cv::noArray()) override;
 
 private:
-    cv::Ptr<cv::cuda::Feature2DAsync> internal_detector;
+    cv::Ptr<cv::cuda::FastFeatureDetector> internal_detector;
 };
 
 

@@ -15,11 +15,5 @@ void CudaFastFeatureDetectorWrapper::detect(const cv::_InputArray &image, std::v
                                             const cv::_InputArray &mask) {
     cv::cuda::GpuMat gpu_image(image);
     cv::cuda::GpuMat gpu_mask(mask);
-    cv::cuda::GpuMat keypoints_gpu(300, 1, CV_64F);
-    cv::cuda::Stream stream;
-
-    internal_detector->detectAsync(gpu_image, keypoints_gpu, gpu_mask, stream);
-    stream.waitForCompletion();
-
-    internal_detector->convert(keypoints_gpu, keypoints);
+    internal_detector->detect(gpu_image, keypoints, gpu_mask);
 }
